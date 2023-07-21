@@ -1,0 +1,12 @@
+server:
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout_sec: 1
+database:
+  driver: mysql
+  source: root:123456@tcp(127.0.0.1:3306)/gid?parseTime=true
+consul:
+  address: 127.0.0.1:8500
+  scheme: http
+
+  

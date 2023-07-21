@@ -1,0 +1,90 @@
+syntax = "proto3";
+package gid.api.v1;
+
+option go_package = "gid/api/v1;v1";
+
+service Mannager {
+    rpc Moudles (MoudlesReq) returns (MoudlesReply);
+    rpc RegisterModules(RegisterModulesReq) returns (RegisterModulesReply);
+}
+
+enum IDKind {
+    // 递增id, 从起始id开始, 每次递增1
+    IncrementID = 0;
+    // 雪花算法id, 适合在ID数据敏感的场景使用
+    SnowflakeID = 1;
+}
+
+message MoudlesReq {
+    // 模块名, 为空时返回所有模块
+    string name = 1;
+}
+message MoudlesReply {
+    repeated Moudle moudles = 1;
+}
+message Moudle {
+    // 模块名
+    string name = 1;
+    // 模块描述
+    string desc = 2;
+    // 模块id类型
+    IDKind id_kind = 3;
+    int64 first_id  = 4;
+    // 每批生成数量
+    int32 load_num = 5; 
+     // 加载阀值
+    int32 load_threshold = 6;
+    // 模块跳过的id范围
+    repeated SkipRange skip_range = 7;
+    int64 start_time = 8; // 开始时间
+    // 模块创建时间
+    int64 createTime = 9;
+    // 模块更新时间
+    int64 updateTime = 10;
+
+    Status status = 15;
+    message Status {
+        // 实际最后生成id
+        int64 real_last_id = 1;
+        // 模块最后生成id, 重启后会从这个id开始生成
+        int64 last_id = 2;
+    }
+}
+
+
+
+message RegisterModulesReq {
+    // 模块名
+    string name = 1;
+    // 模块描述
+    string desc = 2;
+    // 模块id类型
+    IDKind id_kind = 3;
+    // 模块id生成选项
+    oneof id_option {
+        IncrementOption increment_option = 4;
+        SnowflakeOption snowflake_option = 5;
+    }
+}
+message RegisterModulesReply {}
+
+message IncrementOption {
+    int64 first_id  = 1;
+    int32 load_num = 2; // 每批生成数量
+    int32 load_threshold = 3; // 加载阀值
+    // 模块跳过的id范围
+    repeated SkipRange skip_range = 4;
+}
+
+message SnowflakeOption {
+    int64 start_time = 1; // 开始时间
+    int32 load_num = 3; // 每批生成数量
+    int32 load_threshold = 4; // 加载阀值
+    // 模块跳过的id范围
+    repeated SkipRange skip_range = 5;
+}
+
+message SkipRange {
+    int64 start_id = 1;
+    int64 end_id = 2;
+}

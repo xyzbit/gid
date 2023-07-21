@@ -1,0 +1,15 @@
+syntax = "proto3";
+package gid.api.v1;
+
+option go_package = "gid/api/v1;v1";
+
+service Generator {
+    rpc NextID(NextIDReq) returns (NextIDReply) {}
+}
+
+message NextIDReq {
+    string module = 1;
+}
+message NextIDReply {
+    int64 id = 1;
+}
